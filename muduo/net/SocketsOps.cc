@@ -173,6 +173,7 @@ ssize_t sockets::readv(int sockfd, const struct iovec *iov, int iovcnt)
 
 ssize_t sockets::write(int sockfd, const void *buf, size_t count)
 {
+  //sockfd要指定非阻塞写
   return ::write(sockfd, buf, count);
 }
 

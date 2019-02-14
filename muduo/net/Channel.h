@@ -65,6 +65,7 @@ class Channel : noncopyable
   void enableWriting() { events_ |= kWriteEvent; update(); }
   void disableWriting() { events_ &= ~kWriteEvent; update(); }
   void disableAll() { events_ = kNoneEvent; update(); }
+  //名字有歧义,应是是否正在监听读或写事件,比如isMonitorWriteEvent
   bool isWriting() const { return events_ & kWriteEvent; }
   bool isReading() const { return events_ & kReadEvent; }
 
@@ -91,7 +92,7 @@ class Channel : noncopyable
   static const int kReadEvent;
   static const int kWriteEvent;
 
-  EventLoop* loop_;
+  EventLoop* loop_;//所属的事件循环
   const int  fd_;
   int        events_;
   int        revents_; // it's the received event types of epoll or poll

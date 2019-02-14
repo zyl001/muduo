@@ -136,6 +136,7 @@ void TcpConnection::sendInLoop(const StringPiece& message)
   sendInLoop(message.data(), message.size());
 }
 
+//非阻塞函数发送
 void TcpConnection::sendInLoop(const void* data, size_t len)
 {
   loop_->assertInLoopThread();

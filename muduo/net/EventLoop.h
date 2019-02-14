@@ -147,7 +147,7 @@ class EventLoop : noncopyable
   Timestamp pollReturnTime_;
   std::unique_ptr<Poller> poller_;
   std::unique_ptr<TimerQueue> timerQueue_;
-  int wakeupFd_; //
+  int wakeupFd_; //事件用于同步,和fd读写统一处理
   // unlike in TimerQueue, which is an internal class,
   // we don't expose Channel to client.
   std::unique_ptr<Channel> wakeupChannel_;
