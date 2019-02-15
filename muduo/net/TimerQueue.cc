@@ -29,6 +29,8 @@ namespace detail
 
 int createTimerfd()
 {
+  //创建定时器文件描述符,可用poll管理
+  //CLOCK_MONOTONIC系统启动时间,不受更改系统时间影响
   int timerfd = ::timerfd_create(CLOCK_MONOTONIC,
                                  TFD_NONBLOCK | TFD_CLOEXEC);
   if (timerfd < 0)
@@ -38,6 +40,7 @@ int createTimerfd()
   return timerfd;
 }
 
+//when有可能小于当前时间，小于当前时间时说明该定时器晚于预期触发,则100微秒后立即触发
 struct timespec howMuchTimeFromNow(Timestamp when)
 {
   int64_t microseconds = when.microSecondsSinceEpoch()
@@ -56,9 +59,11 @@ struct timespec howMuchTimeFromNow(Timestamp when)
 
 void readTimerfd(int timerfd, Timestamp now)
 {
+  //超时次数
   uint64_t howmany;
   ssize_t n = ::read(timerfd, &howmany, sizeof howmany);
   LOG_TRACE << "TimerQueue::handleRead() " << howmany << " at " << now.toString();
+  //目前linux要求返回是8字节,待确认
   if (n != sizeof howmany)
   {
     LOG_ERROR << "TimerQueue::handleRead() reads " << n << " bytes instead of 8";
@@ -73,6 +78,8 @@ void resetTimerfd(int timerfd, Timestamp expiration)
   memZero(&newValue, sizeof newValue);
   memZero(&oldValue, sizeof oldValue);
   newValue.it_value = howMuchTimeFromNow(expiration);
+  //设置超时时间,一个timerfd同时应该只能设置一个超时时间
+  //超时时该文件描述符才是可读的
   int ret = ::timerfd_settime(timerfd, 0, &newValue, &oldValue);
   if (ret)
   {
@@ -91,6 +98,7 @@ using namespace muduo::net::detail;
 TimerQueue::TimerQueue(EventLoop* loop)
   : loop_(loop),
     timerfd_(createTimerfd()),
+    //调用成员对象的的构造函数进行初始化,第一次见这种写法
     timerfdChannel_(loop, timerfd_),
     timers_(),
     callingExpiredTimers_(false)
@@ -112,6 +120,7 @@ TimerQueue::~TimerQueue()
     delete timer.second;
   }
 }
+
 
 TimerId TimerQueue::addTimer(TimerCallback cb,
                              Timestamp when,
@@ -136,6 +145,7 @@ void TimerQueue::addTimerInLoop(Timer* timer)
 
   if (earliestChanged)
   {
+    //设置超时时间,一个timerfd同时应该只能设置一个超时时间
     resetTimerfd(timerfd_, timer->expiration());
   }
 }
@@ -171,6 +181,7 @@ void TimerQueue::handleRead()
   callingExpiredTimers_ = true;
   cancelingTimers_.clear();
   // safe to callback outside critical section
+  // HACK 定时任务也是在消息循环线程中执行的
   for (const Entry& it : expired)
   {
     it.second->run();
