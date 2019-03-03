@@ -18,8 +18,8 @@ namespace muduo
 namespace detail
 {
 
-const int kSmallBuffer = 4000;
-const int kLargeBuffer = 4000*1000;
+const int kSmallBuffer = 4000;//约等于4kB
+const int kLargeBuffer = 4000*1000;//约等于4M
 
 template<int SIZE>
 class FixedBuffer : noncopyable

@@ -79,7 +79,7 @@ class AppendFile : noncopyable
 
   FILE* fp_;
   char buffer_[64*1024];
-  off_t writtenBytes_;
+  off_t writtenBytes_;//统计文件写入的字节数,有部分有可能还未实际写入到文件
 };
 
 }  // namespace FileUtil

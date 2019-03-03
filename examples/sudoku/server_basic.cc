@@ -41,6 +41,7 @@ class SudokuServer
         << (conn->connected() ? "UP" : "DOWN");
   }
 
+  //buf对应连接的当前所有接受缓存，而不是单次触发时的缓存
   void onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp)
   {
     LOG_DEBUG << conn->name();

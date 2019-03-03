@@ -1,0 +1,3 @@
+zyl@ubuntu:/mnt/hgfs/share/muduo-master/examples/simple/echo$ 
+g++ echo.cc main.cc -I/mnt/hgfs/share/build/release-install-cpp11/include -L/mnt/hgfs/share/build/release-install-cpp11/lib -lmuduo_net -lmuduo_base  -lpthread -std=c++11 
+

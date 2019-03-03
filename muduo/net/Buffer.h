@@ -123,6 +123,7 @@ class Buffer : public muduo::copyable
     }
   }
 
+  //不包括end所指的值
   void retrieveUntil(const char* end)
   {
     assert(peek() <= end);

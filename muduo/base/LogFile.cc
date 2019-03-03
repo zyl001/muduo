@@ -61,6 +61,7 @@ void LogFile::flush()
   }
 }
 
+//日志文件中追加日志信息
 void LogFile::append_unlocked(const char* logline, int len)
 {
   file_->append(logline, len);
@@ -84,16 +85,18 @@ void LogFile::append_unlocked(const char* logline, int len)
       else if (now - lastFlush_ > flushInterval_)
       {
         lastFlush_ = now;
-        file_->flush();
+        file_->flush();//条数间隔和时间间隔都满足才主动flush
       }
     }
   }
 }
 
+//新建日志文件
 bool LogFile::rollFile()
 {
   time_t now = 0;
   string filename = getLogFileName(basename_, &now);
+  //记录日志的年月日
   time_t start = now / kRollPerSeconds_ * kRollPerSeconds_;
 
   if (now > lastRoll_)
